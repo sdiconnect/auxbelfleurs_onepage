@@ -89,10 +89,27 @@ Le géocodage se fait tout seul à l'enregistrement. Voir `docs/guide-ajout-bout
 
 ## Formulaire de contact
 
-- Sécurité : nonce, honeypot, validation serveur, case RGPD non pré-cochée.
-- `Reply-To` = e-mail du visiteur → répondre directement depuis sa boîte mail.
+- **Destinataire** : `auxbelfleurs@gmail.com`. Modifiable sans éditer le thème via le
+  filtre `abf_contact_email` (dans un mu-plugin ou `functions.php`).
+- `Reply-To` = e-mail du visiteur → répondre directement depuis sa boîte mail
+  (l'expéditeur `From` reste celui du site, pour ne pas casser SPF/DKIM).
 - **Chaque message est aussi enregistré en base** (menu **Messages reçus**), au cas
-  où l'envoi SMTP échoue. Antispam Bee et WP Mail SMTP restent en place.
+  où l'envoi SMTP échoue.
+
+### Protections anti-spam (empilées)
+
+1. **Nonce** WordPress (anti-CSRF / soumissions forgées).
+2. **Honeypot** : champ caché « site » ; s'il est rempli → rejet silencieux.
+3. **Piège temporel** : envoi en moins de 3 s → rejet. Mesuré **côté client** (JS)
+   pour rester compatible avec le cache de page WP Rocket.
+4. **Limite de débit par IP** : max 5 envois/heure (filtre `abf_contact_rate_limit`).
+   IP hachée, rien de personnel stocké en clair.
+5. **Message trop court** (< 10 caractères) ou **truffé de liens** (≥ 4 URL) → rejet.
+6. **Case RGPD** obligatoire (non pré-cochée) + validation serveur de tous les champs.
+7. **Antispam Bee** (déjà installé) et **WP Mail SMTP** restent en complément.
+
+> WP Rocket : le nonce est mis en cache avec la page (valable ~24 h côté WordPress).
+> Garder une durée de vie de cache < 12 h, ou exclure la page du cache si besoin.
 
 ## Points techniques
 

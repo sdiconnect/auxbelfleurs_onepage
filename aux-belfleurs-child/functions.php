@@ -26,7 +26,9 @@ function abf_infos() {
 		'cp'        => '70700',
 		'ville'     => 'Igny',
 		'telephone' => '06 88 17 06 55',
-		'email'     => get_option( 'admin_email' ),
+		// Adresse de contact (destinataire du formulaire + affichée sur la page).
+		// Modifiable sans éditer le thème via le filtre « abf_contact_email ».
+		'email'     => apply_filters( 'abf_contact_email', 'auxbelfleurs@gmail.com' ),
 		'instagram' => 'https://www.instagram.com/auxbelfleurs/',
 		'facebook'  => 'https://www.facebook.com/auxbelfleurs/',
 	);

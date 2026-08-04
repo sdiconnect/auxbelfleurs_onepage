@@ -22,6 +22,20 @@
 	var nearBtn = document.getElementById('abf-near-me');
 	var emptyEl = document.getElementById('abf-list-empty');
 
+	/* ------------------------------------------------------------------ */
+	/* Anti-spam : piège temporel du formulaire (mesuré côté client).      */
+	/* Compatible cache de page : rien n'est figé côté serveur.            */
+	/* ------------------------------------------------------------------ */
+	(function () {
+		var form = document.querySelector('.abf-contact-form');
+		if (!form) { return; }
+		var started = Date.now();
+		form.addEventListener('submit', function () {
+			var el = document.getElementById('abf_elapsed');
+			if (el) { el.value = String(Date.now() - started); }
+		});
+	})();
+
 	if (!mapEl) {
 		return;
 	}

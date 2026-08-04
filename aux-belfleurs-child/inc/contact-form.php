@@ -74,6 +74,86 @@ function abf_message_column_content( $column, $post_id ) {
 }
 add_action( 'manage_abf_message_posts_custom_column', 'abf_message_column_content', 10, 2 );
 
+/* ------------------------------------------------------------------ */
+/* Anti-spam                                                           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Réponse « piège » : on affiche un succès au bot sans rien envoyer ni stocker.
+ * Évite de signaler au robot que sa soumission a été rejetée.
+ *
+ * @param string $redirect URL de retour.
+ */
+function abf_spam_trap( $redirect ) {
+	wp_safe_redirect( add_query_arg( 'contact', 'success', $redirect ) . '#contact' );
+	exit;
+}
+
+/**
+ * Champ du piège temporel. Mesuré CÔTÉ CLIENT (JS) pour rester compatible avec
+ * le cache de page (WP Rocket) : le JS y inscrit le temps écoulé, en millisecondes,
+ * entre l'affichage du formulaire et l'envoi. Un horodatage rendu par le serveur
+ * serait figé par le cache et pénaliserait les visiteurs légitimes.
+ */
+function abf_timetrap_fields() {
+	echo '<input type="hidden" name="abf_elapsed" id="abf_elapsed" value="">';
+}
+
+/**
+ * Vérifie le piège temporel : un humain met au moins ~3 s à remplir le formulaire.
+ * Le champ est vide si le JS n'a pas tourné (JS désactivé) : dans ce cas on laisse
+ * passer (les autres couches — honeypot, débit, Antispam Bee — prennent le relais).
+ *
+ * @return bool True si le délai est plausible (ou non mesurable).
+ */
+function abf_check_timetrap() {
+	if ( ! isset( $_POST['abf_elapsed'] ) || '' === $_POST['abf_elapsed'] ) {
+		return true; // Non mesuré (JS off) : on ne bloque pas.
+	}
+	$elapsed = (int) sanitize_text_field( wp_unslash( $_POST['abf_elapsed'] ) );
+	return $elapsed >= 3000; // Moins de 3 s => robot.
+}
+
+/**
+ * IP du visiteur (hachée pour ne rien stocker de personnel en clair).
+ *
+ * @return string Hash court de l'IP.
+ */
+function abf_client_ip_hash() {
+	$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+	return md5( $ip . '|' . wp_salt() );
+}
+
+/**
+ * Limitation de débit par IP via transient.
+ * Autorise un nombre borné d'envois par heure (filtrable).
+ *
+ * @return bool True si sous la limite (envoi autorisé).
+ */
+function abf_check_rate_limit() {
+	$max = (int) apply_filters( 'abf_contact_rate_limit', 5 ); // Envois max / heure / IP.
+	if ( $max <= 0 ) {
+		return true; // Limitation désactivée.
+	}
+	$key   = 'abf_rl_' . abf_client_ip_hash();
+	$count = (int) get_transient( $key );
+	if ( $count >= $max ) {
+		return false;
+	}
+	set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+	return true;
+}
+
+/**
+ * Compte les URL présentes dans un texte.
+ *
+ * @param string $text Texte.
+ * @return int
+ */
+function abf_count_links( $text ) {
+	return preg_match_all( '#https?://|www\.#i', (string) $text );
+}
+
 /**
  * Traite la soumission du formulaire de contact.
  * Branché sur admin-post (utilisateurs connectés et non connectés).
@@ -87,10 +167,20 @@ function abf_handle_contact() {
 		exit;
 	}
 
-	// Honeypot : champ « site » qui doit rester vide.
+	// Honeypot : champ « site » qui doit rester vide. Rempli => bot.
 	if ( ! empty( $_POST['abf_website'] ) ) {
-		// Spam probable : on fait comme si tout allait bien, sans rien envoyer.
-		wp_safe_redirect( add_query_arg( 'contact', 'success', $redirect ) . '#contact' );
+		abf_spam_trap( $redirect ); // On fait comme si tout allait bien, sans rien envoyer.
+	}
+
+	// Piège temporel : un humain met plusieurs secondes à remplir le formulaire ;
+	// un bot le soumet quasi instantanément. Le jeton est signé (anti-falsification).
+	if ( ! abf_check_timetrap() ) {
+		abf_spam_trap( $redirect );
+	}
+
+	// Limitation par IP : pas plus de N envois par heure (anti-flood).
+	if ( ! abf_check_rate_limit() ) {
+		wp_safe_redirect( add_query_arg( 'contact', 'toomany', $redirect ) . '#contact' );
 		exit;
 	}
 
@@ -111,6 +201,17 @@ function abf_handle_contact() {
 		exit;
 	}
 
+	// Longueur minimale du message (les bots envoient souvent 1-2 mots).
+	if ( mb_strlen( trim( $message ) ) < 10 ) {
+		wp_safe_redirect( add_query_arg( 'contact', 'invalid', $redirect ) . '#contact' );
+		exit;
+	}
+
+	// Anti-spam par liens : un message truffé d'URL est presque toujours du spam.
+	if ( abf_count_links( $message ) >= 4 ) {
+		abf_spam_trap( $redirect );
+	}
+
 	// 1) Enregistrement en base (filet de sécurité si le SMTP échoue).
 	$post_id = wp_insert_post(
 		array(
@@ -129,7 +230,7 @@ function abf_handle_contact() {
 
 	// 2) Envoi de l'e-mail.
 	$infos   = abf_infos();
-	$to      = get_option( 'admin_email' );
+	$to      = $infos['email']; // Destinataire = adresse de contact (filtrable).
 	/* translators: %s: nom de l'expéditeur */
 	$subject = sprintf( __( '[Site] Nouveau message de %s', 'aux-belfleurs' ), $nom );
 	$body    = sprintf(
@@ -170,8 +271,9 @@ function abf_contact_feedback() {
 		'success' => array( 'success', __( 'Message envoyé', 'aux-belfleurs' ), __( 'Merci, je vous réponds sous 48 h.', 'aux-belfleurs' ) ),
 		'saved'   => array( 'success', __( 'Message enregistré', 'aux-belfleurs' ), __( 'Merci, je vous réponds sous 48 h.', 'aux-belfleurs' ) ),
 		'error'   => array( 'error', __( 'Une erreur est survenue', 'aux-belfleurs' ), __( 'Merci de réessayer dans un instant.', 'aux-belfleurs' ) ),
-		'invalid' => array( 'error', __( 'Il manque une information', 'aux-belfleurs' ), __( 'Merci de vérifier votre nom, votre e-mail et votre message.', 'aux-belfleurs' ) ),
+		'invalid' => array( 'error', __( 'Il manque une information', 'aux-belfleurs' ), __( 'Merci de vérifier votre nom, votre e-mail et votre message (au moins 10 caractères).', 'aux-belfleurs' ) ),
 		'rgpd'    => array( 'error', __( 'Consentement requis', 'aux-belfleurs' ), __( 'Merci de cocher la case avant d\'envoyer votre message.', 'aux-belfleurs' ) ),
+		'toomany' => array( 'error', __( 'Trop de tentatives', 'aux-belfleurs' ), __( 'Vous avez envoyé plusieurs messages récemment. Merci de réessayer dans un moment.', 'aux-belfleurs' ) ),
 	);
 
 	return isset( $messages[ $code ] )

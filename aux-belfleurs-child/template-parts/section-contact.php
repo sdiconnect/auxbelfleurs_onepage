@@ -67,6 +67,7 @@ $abf_email_obf = antispambot( $abf_infos['email'] );
 			<form class="abf-contact-form" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
 				<input type="hidden" name="action" value="abf_contact">
 				<?php wp_nonce_field( 'abf_contact', 'abf_contact_nonce' ); ?>
+				<?php abf_timetrap_fields(); // Piège temporel signé (anti-bot). ?>
 
 				<!-- Honeypot anti-spam : ne pas remplir. Masqué aux humains. -->
 				<div class="abf-hp" aria-hidden="true">
