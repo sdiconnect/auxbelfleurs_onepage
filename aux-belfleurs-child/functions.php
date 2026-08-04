@@ -129,29 +129,92 @@ function abf_enqueue_scripts() {
 add_action( 'wp_enqueue_scripts', 'abf_enqueue_scripts' );
 
 /**
- * Préchargements pour améliorer le LCP.
- * Polices critiques sur toutes les pages du thème ; connexions carte sur l'accueil.
+ * Déclaration des polices auto-hébergées.
+ * Renvoie la liste des fichiers avec leur famille, graisse et plage Unicode.
+ *
+ * @return array
  */
-function abf_resource_hints() {
-	// Polices auto-hébergées (titre + texte) : preload avec crossorigin obligatoire.
-	$fonts = array(
-		'/assets/fonts/grand-hotel-400-latin.woff2',
-		'/assets/fonts/lato-400-latin.woff2',
+function abf_font_files() {
+	$latin     = 'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+	$latin_ext = 'U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF';
+
+	return array(
+		array( 'Grand Hotel', 400, 'grand-hotel-400-latin.woff2', $latin ),
+		array( 'Grand Hotel', 400, 'grand-hotel-400-latin-ext.woff2', $latin_ext ),
+		array( 'Lato', 400, 'lato-400-latin.woff2', $latin ),
+		array( 'Lato', 400, 'lato-400-latin-ext.woff2', $latin_ext ),
+		array( 'Lato', 700, 'lato-700-latin.woff2', $latin ),
+		array( 'Lato', 700, 'lato-700-latin-ext.woff2', $latin_ext ),
+		array( 'Lato', 900, 'lato-900-latin.woff2', $latin ),
+		array( 'Lato', 900, 'lato-900-latin-ext.woff2', $latin_ext ),
 	);
-	foreach ( $fonts as $font ) {
+}
+
+/**
+ * Injecte les @font-face EN LIGNE dans le <head>, avec des URL ABSOLUES.
+ *
+ * Plus robuste que le @font-face dans le fichier CSS : insensible à la
+ * minification/combinaison des CSS et au « Remove Unused CSS » de WP Rocket
+ * (qui, sur des chemins relatifs ou des feuilles optimisées, casse souvent les
+ * polices personnalisées). Précédé du preload des 2 polices critiques (LCP).
+ */
+function abf_print_font_faces() {
+	// Preload des polices visibles d'emblée (titre + texte), crossorigin obligatoire.
+	foreach ( array( 'grand-hotel-400-latin.woff2', 'lato-400-latin.woff2' ) as $file ) {
 		printf(
 			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
-			esc_url( ABF_URI . $font )
+			esc_url( ABF_URI . '/assets/fonts/' . $file )
 		);
 	}
 
-	// Sur l'accueil uniquement : préconnexion aux serveurs de la carte.
+	echo '<style id="abf-fonts">' . "\n";
+	foreach ( abf_font_files() as $f ) {
+		list( $family, $weight, $file, $range ) = $f;
+		printf(
+			'@font-face{font-family:"%1$s";font-style:normal;font-weight:%2$d;font-display:swap;src:url("%3$s") format("woff2");unicode-range:%4$s;}' . "\n",
+			esc_attr( $family ),
+			(int) $weight,
+			esc_url( ABF_URI . '/assets/fonts/' . $file ),
+			esc_attr( $range )
+		);
+	}
+	echo '</style>' . "\n";
+
+	// Préconnexion aux serveurs de la carte, uniquement sur l'accueil.
 	if ( is_front_page() ) {
 		echo '<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>' . "\n";
 		echo '<link rel="preconnect" href="https://unpkg.com" crossorigin>' . "\n";
 	}
 }
-add_action( 'wp_head', 'abf_resource_hints', 1 );
+add_action( 'wp_head', 'abf_print_font_faces', 1 );
+
+/**
+ * Empêche WP Rocket (Remove Unused CSS) de supprimer les polices personnalisées.
+ * Sans effet si WP Rocket est absent.
+ *
+ * @param array $safelist Liste blanche RUCSS.
+ * @return array
+ */
+function abf_rocket_font_safelist( $safelist ) {
+	$safelist[] = 'Grand Hotel';
+	$safelist[] = 'Lato';
+	$safelist[] = 'abf-fonts';
+	return $safelist;
+}
+add_filter( 'rocket_rucss_safelist', 'abf_rocket_font_safelist' );
+
+/**
+ * Exclut la feuille du thème de la suppression de CSS inutilisé (sécurité
+ * supplémentaire pour conserver tous les styles de la page unique).
+ *
+ * @param array $excluded Motifs exclus.
+ * @return array
+ */
+function abf_rocket_exclude_css( $excluded ) {
+	$excluded[] = 'aux-belfleurs-child/assets/css/main.css';
+	return $excluded;
+}
+add_filter( 'rocket_rucss_excluded_stylesheets', 'abf_rocket_exclude_css' );
 
 /**
  * Réglages du thème enfant (support des logos, titre, etc.).

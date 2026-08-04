@@ -44,6 +44,10 @@ docs/
    *(un logo par défaut est déjà fourni dans `assets/images/logo.webp`)*.
 6. **Polices** : rien à faire — Grand Hotel (titres) et Lato (texte) sont **incluses**
    dans le thème (`assets/fonts/`, auto-hébergées, sans appel externe / RGPD).
+   Les `@font-face` sont injectés en ligne dans le `<head>` avec des URL absolues
+   (robuste face à la minification CSS et au « Remove Unused CSS » de WP Rocket).
+   **Après installation : vider le cache WP Rocket** (Réglages → WP Rocket → Vider le cache).
+   Si les titres restent en police de repli, voir « Dépannage polices » plus bas.
 7. Les visuels (héro + galerie) sont déjà fournis en WebP dans `assets/images/` ;
    remplaçables via les filtres `abf_hero_image` / `abf_gallery_tiles`.
 8. Créer/vérifier une page d'accueil : **Réglages → Lecture → La page d'accueil affiche → Une page statique**.
@@ -129,6 +133,23 @@ Le géocodage se fait tout seul à l'enregistrement. Voir `docs/guide-ajout-bout
 2. Les placer dans `aux-belfleurs-child/assets/vendor/leaflet/`.
 3. Dans `functions.php`, remplacer les URL `leafletCss` / `leafletJs` par
    `ABF_URI . '/assets/vendor/leaflet/leaflet.css'` et `.../leaflet.js`.
+
+## Dépannage polices
+
+Si les titres s'affichent dans une écriture de repli (calligraphie générique du
+navigateur) au lieu de **Grand Hotel** :
+
+1. **Vider le cache WP Rocket** puis recharger la page en navigation privée
+   (le navigateur peut aussi avoir mis en cache l'ancien CSS).
+2. Vérifier que le dossier `assets/fonts/` du thème contient bien les 8 `.woff2`
+   (l'upload d'un zip via un antivirus trop strict peut les bloquer).
+3. WP Rocket → **Fichiers optimisés → Optimiser la diffusion CSS / Remove Unused CSS** :
+   le thème ajoute déjà « Grand Hotel » et « Lato » à la liste blanche (filtre
+   `rocket_rucss_safelist`) et exclut `main.css`. Si un doute persiste, désactiver
+   temporairement « Remove Unused CSS » pour confirmer que c'est bien la cause.
+4. Ouvrir les outils dev (onglet Réseau, filtre « Font ») : les `.woff2` doivent
+   renvoyer **200**. Un **404** = problème de chemin ; un **403** = règle serveur
+   bloquant les polices (à lever côté hébergeur).
 
 ## Nettoyage e-commerce
 
