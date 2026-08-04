@@ -29,6 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <main id="abf-content">
 	<?php
 	get_template_part( 'template-parts/section', 'hero' );
+	get_template_part( 'template-parts/section', 'gallery' );
 	get_template_part( 'template-parts/section', 'map' );
 	get_template_part( 'template-parts/section', 'contact' );
 	?>

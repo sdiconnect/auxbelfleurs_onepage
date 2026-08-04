@@ -20,7 +20,7 @@ $abf_grouped = abf_get_stores_grouped();
 	<div class="abf-container">
 		<header class="abf-section-head">
 			<h2><?php esc_html_e( 'Où m\'acheter', 'aux-belfleurs' ); ?></h2>
-			<p><?php esc_html_e( 'Trouvez la boutique la plus proche de chez vous.', 'aux-belfleurs' ); ?></p>
+			<p><?php esc_html_e( 'Où trouver mes produits en France ?', 'aux-belfleurs' ); ?></p>
 		</header>
 
 		<div class="abf-map-tools">
@@ -34,6 +34,7 @@ $abf_grouped = abf_get_stores_grouped();
 					inputmode="text">
 			</label>
 			<button type="button" class="abf-btn abf-btn--ghost" id="abf-near-me" hidden>
+				<span class="abf-near__dot" aria-hidden="true"></span>
 				<?php esc_html_e( 'Autour de moi', 'aux-belfleurs' ); ?>
 			</button>
 		</div>
@@ -55,8 +56,21 @@ $abf_grouped = abf_get_stores_grouped();
 				<?php else : ?>
 					<p class="abf-store-list__empty" id="abf-list-empty" hidden></p>
 					<?php foreach ( $abf_grouped as $dep => $stores ) : ?>
+						<?php
+						$abf_n    = count( $stores );
+						$abf_code = array_search( $dep, abf_departements(), true );
+						$abf_head = $abf_code ? sprintf( '%s (%s)', $dep, $abf_code ) : $dep;
+						?>
 						<div class="abf-dep-group" data-dep="<?php echo esc_attr( $dep ); ?>">
-							<h3 class="abf-dep-title"><?php echo esc_html( $dep ); ?></h3>
+							<h3 class="abf-dep-title">
+								<span><?php echo esc_html( $abf_head ); ?></span>
+								<span class="abf-dep-count">
+									<?php
+									/* translators: %d: nombre de boutiques */
+									printf( esc_html( _n( '%d boutique', '%d boutiques', $abf_n, 'aux-belfleurs' ) ), (int) $abf_n );
+									?>
+								</span>
+							</h3>
 							<ul class="abf-dep-stores">
 								<?php foreach ( $stores as $s ) : ?>
 									<?php
@@ -65,6 +79,7 @@ $abf_grouped = abf_get_stores_grouped();
 										? 'https://www.openstreetmap.org/directions?to=' . rawurlencode( $s['lat'] . ',' . $s['lng'] )
 										: 'https://www.openstreetmap.org/search?query=' . rawurlencode( trim( $s['adresse'] . ' ' . $s['code_postal'] . ' ' . $s['ville'] ) );
 									$abf_haystack = strtolower( $s['ville'] . ' ' . $s['code_postal'] . ' ' . $s['nom'] );
+									$abf_loc      = trim( $s['code_postal'] . ' ' . $s['ville'] );
 									?>
 									<li
 										class="abf-store"
@@ -72,19 +87,24 @@ $abf_grouped = abf_get_stores_grouped();
 										data-lat="<?php echo esc_attr( (string) $s['lat'] ); ?>"
 										data-lng="<?php echo esc_attr( (string) $s['lng'] ); ?>"
 										data-search="<?php echo esc_attr( $abf_haystack ); ?>">
-										<h4 class="abf-store__name"><?php echo esc_html( $s['nom'] ); ?></h4>
-										<address class="abf-store__addr">
-											<?php if ( $s['adresse'] ) : ?>
-												<?php echo esc_html( $s['adresse'] ); ?><br>
+										<div class="abf-store__main">
+											<h4 class="abf-store__name"><?php echo esc_html( $s['nom'] ); ?></h4>
+											<address class="abf-store__addr">
+												<?php if ( $s['adresse'] ) : ?>
+													<?php echo esc_html( $s['adresse'] ); ?><br>
+												<?php endif; ?>
+												<?php echo esc_html( $abf_loc ); ?>
+											</address>
+											<?php if ( $s['telephone'] ) : ?>
+												<a class="abf-store__tel" href="tel:<?php echo esc_attr( abf_tel_href( $s['telephone'] ) ); ?>">
+													<?php echo esc_html( $s['telephone'] ); ?>
+												</a>
 											<?php endif; ?>
-											<?php echo esc_html( trim( $s['code_postal'] . ' ' . $s['ville'] ) ); ?>
-										</address>
-										<?php if ( $s['telephone'] ) : ?>
-											<a class="abf-store__tel" href="tel:<?php echo esc_attr( abf_tel_href( $s['telephone'] ) ); ?>">
-												<?php echo esc_html( $s['telephone'] ); ?>
-											</a>
-										<?php endif; ?>
-										<a class="abf-store__route abf-btn abf-btn--small" href="<?php echo esc_url( $abf_route ); ?>" target="_blank" rel="noopener">
+										</div>
+										<a class="abf-store__route abf-btn abf-btn--small"
+											href="<?php echo esc_url( $abf_route ); ?>"
+											target="_blank" rel="noopener"
+											aria-label="<?php echo esc_attr( sprintf( /* translators: 1: nom, 2: ville */ __( 'Itinéraire vers %1$s, %2$s', 'aux-belfleurs' ), $s['nom'], $s['ville'] ) ); ?>">
 											<?php esc_html_e( 'Itinéraire', 'aux-belfleurs' ); ?>
 										</a>
 									</li>

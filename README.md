@@ -18,13 +18,15 @@ aux-belfleurs-child/         Le thème enfant à installer
 │   ├── csv-import.php       Import CSV des boutiques
 │   ├── stores.php           Récupération des points de vente (groupés par dép.)
 │   └── contact-form.php     Traitement du formulaire + enregistrement en base
-├── template-parts/          Une partie de template par section
+├── template-parts/          Une partie de template par section (dont section-gallery)
 └── assets/
-    ├── css/main.css         Feuille de style unique (variables + charte)
+    ├── css/main.css         Feuille de style unique (tokens design + charte)
     ├── js/main.js           JS unique (carte, recherche, géoloc)
-    └── images/              Déposez ici hero.webp (voir le README du dossier)
+    ├── fonts/               Déposez ici les .woff2 (Grand Hotel + Lato) — voir README
+    └── images/              logo.webp, hero-savons.webp, shampoings-solides.webp (fournis)
 
 data/points-de-vente-modele.csv   CSV modèle avec les 21 boutiques
+data/points-de-vente-source.json  Données source du handoff design (provenance)
 docs/
 ├── nettoyage-ecommerce.md        Checklist de retrait de WooCommerce + redirections
 └── guide-ajout-boutique.md       Mini-guide pour ajouter une boutique (Léa)
@@ -37,11 +39,19 @@ docs/
 3. WordPress → **Apparence → Thèmes → Ajouter → Téléverser un thème**, choisir le zip.
    *(Astra doit déjà être installé : c'est le thème parent.)*
 4. **Activer** « Aux Bêl'fleurs ».
-5. **Apparence → Personnaliser → Identité du site → Logo** : déposer le logo floral doré.
-6. Déposer la photo de fond du hero dans `assets/images/hero.webp`
-   (voir `aux-belfleurs-child/assets/images/README.txt`).
-7. Créer/vérifier une page d'accueil : **Réglages → Lecture → La page d'accueil affiche → Une page statique**.
+5. **Apparence → Personnaliser → Identité du site → Logo** : déposer le logo floral doré
+   *(un logo par défaut est déjà fourni dans `assets/images/logo.webp`)*.
+6. **Polices** : déposer les `.woff2` dans `assets/fonts/` (Grand Hotel + Lato) —
+   voir `aux-belfleurs-child/assets/fonts/README.txt`. Sans elles, un repli s'affiche
+   (le site reste lisible).
+7. Les visuels (héro + galerie) sont déjà fournis en WebP dans `assets/images/` ;
+   remplaçables via les filtres `abf_hero_image` / `abf_gallery_tiles`.
+8. Créer/vérifier une page d'accueil : **Réglages → Lecture → La page d'accueil affiche → Une page statique**.
    Le fichier `front-page.php` prend automatiquement le dessus sur cette page.
+
+> **Design** : couleurs, typographie, espacements, rayons et ombres sont alignés sur la
+> maquette hifi validée (design handoff). Tous les tokens sont dans le `:root` en haut de
+> `assets/css/main.css` — modifier une couleur = un seul endroit.
 
 > Le thème charge **Leaflet en différé** depuis unpkg.com (CDN) uniquement quand
 > la carte approche de l'écran, et les **tuiles depuis OpenStreetMap**. Aucune clé

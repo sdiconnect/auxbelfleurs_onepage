@@ -91,7 +91,7 @@
 		var bounds = [];
 		stores.forEach(function (s) {
 			if (s.lat == null || s.lng == null) { return; }
-			var marker = L.marker([s.lat, s.lng]).addTo(map);
+			var marker = L.marker([s.lat, s.lng], { icon: markerIcon(false) }).addTo(map);
 			marker.bindPopup(popupHtml(s));
 			marker.on('click', function () { highlightStore(s.id, true); });
 			markers[s.id] = marker;
@@ -105,13 +105,26 @@
 		}
 	}
 
+	// Marqueur doré (défaut) / sarcelle (actif), en divIcon (cf. .abf-marker en CSS).
+	function markerIcon(active) {
+		return L.divIcon({
+			className: 'abf-marker-wrap',
+			html: '<span class="abf-marker' + (active ? ' abf-marker--active' : '') + '"></span>',
+			iconSize: active ? [28, 28] : [18, 18],
+			iconAnchor: active ? [14, 14] : [9, 9],
+			popupAnchor: [0, active ? -14 : -9]
+		});
+	}
+
 	function popupHtml(s) {
-		var addr = [s.adr, ((s.cp || '') + ' ' + (s.ville || '')).trim()]
-			.filter(Boolean).join('<br>');
 		var route = 'https://www.openstreetmap.org/directions?to=' + encodeURIComponent(s.lat + ',' + s.lng);
-		var html = '<div class="abf-popup"><h4>' + esc(s.nom) + '</h4>';
-		if (addr) { html += '<p>' + addr + '</p>'; }
-		if (s.tel) { html += '<p><a href="tel:' + telHref(s.tel) + '">' + esc(s.tel) + '</a></p>'; }
+		var ville = ((s.cp || '') + ' ' + (s.ville || '')).trim();
+		var html = '<div class="abf-popup">';
+		if (s.dep) { html += '<p class="abf-popup__dep">' + esc(s.dep) + '</p>'; }
+		html += '<h4>' + esc(s.nom) + '</h4>';
+		if (s.adr) { html += '<p class="abf-popup__ville">' + esc(s.adr) + '</p>'; }
+		if (ville) { html += '<p class="abf-popup__ville">' + esc(ville) + '</p>'; }
+		if (s.tel) { html += '<p class="abf-popup__ville"><a href="tel:' + telHref(s.tel) + '">' + esc(s.tel) + '</a></p>'; }
 		html += '<a class="abf-btn abf-btn--small" target="_blank" rel="noopener" href="' + route + '">' +
 			(i18n.route || 'Itinéraire') + '</a></div>';
 		return html;
@@ -123,17 +136,35 @@
 
 	var listItems = listEl ? Array.prototype.slice.call(listEl.querySelectorAll('.abf-store')) : [];
 
+	var activeId = null;
+
 	function highlightStore(id, openPopup) {
 		listItems.forEach(function (li) {
-			li.classList.toggle('is-active', parseInt(li.getAttribute('data-id'), 10) === id);
+			var on = parseInt(li.getAttribute('data-id'), 10) === id;
+			li.classList.toggle('is-active', on);
+			if (on) { li.setAttribute('aria-current', 'true'); }
+			else { li.removeAttribute('aria-current'); }
 		});
+
+		// Réinitialise l'ancien marqueur actif, active le nouveau.
+		if (activeId !== null && markers[activeId] && activeId !== id) {
+			markers[activeId].setIcon(markerIcon(false));
+		}
+		activeId = id;
+
 		var marker = markers[id];
 		if (marker && map) {
-			bounce(marker);
+			marker.setIcon(markerIcon(true));
 			if (openPopup) {
 				map.setView(marker.getLatLng(), Math.max(map.getZoom(), 12), { animate: true });
 				marker.openPopup();
 			}
+		}
+
+		// Fait défiler la carte boutique correspondante dans la colonne liste.
+		if (openPopup) {
+			var li = listEl && listEl.querySelector('.abf-store[data-id="' + id + '"]');
+			if (li) { li.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
 		}
 	}
 

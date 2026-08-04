@@ -1,19 +1,19 @@
-Image du hero
-=============
+Images du thème
+===============
 
-Déposez ici la photo de fond du hero sous le nom exact :
+Fichiers fournis (déjà optimisés en WebP à partir des visuels du handoff design) :
 
-    hero.webp
+    hero-savons.webp         Photo de fond du héro + 1re tuile de galerie (~124 Ko, 1920 px)
+    shampoings-solides.webp  2e tuile de galerie (~85 Ko, 1200 px)
+    logo.webp                Logo floral doré (~18 Ko)
 
-Recommandations :
-- Format WebP (converti via Imagify, déjà installé sur le site).
-- Paysage, environ 1920 × 1280 px, poids < 250 Ko.
-- Sujet plutôt clair/net au centre : le texte blanc s'affiche par-dessus
-  un voile sombre, donc une photo lumineuse reste lisible.
-- Idéal : savons/cosmétiques solides, plan de travail de l'atelier, fleurs.
+Remplacer une image : gardez le même nom de fichier, ou :
+- pour le héro, utilisez le filtre `abf_hero_image` (voir section-hero.php) ;
+- pour la galerie, le filtre `abf_gallery_tiles` (voir section-gallery.php).
 
-Tant que hero.webp est absent, un dégradé sarcelle → or s'affiche
-automatiquement à la place (le site n'est jamais « cassé »).
+Le logo a un fond blanc ; il est affiché en `mix-blend-mode: multiply` pour se fondre
+dans la crème. Pour un rendu parfait, fournir à terme un PNG/SVG à fond transparent
+(réglable aussi via Apparence → Personnaliser → Identité du site → Logo).
 
-Le logo floral doré se règle dans WordPress :
-Apparence → Personnaliser → Identité du site → Logo.
+Si `hero-savons.webp` venait à manquer, un dégradé sarcelle → or s'affiche
+automatiquement dans le héro (le site n'est jamais « cassé »).

@@ -33,6 +33,16 @@ function abf_infos() {
 }
 
 /**
+ * URL d'une image du thème (dossier assets/images).
+ *
+ * @param string $file Nom de fichier.
+ * @return string
+ */
+function abf_img( $file ) {
+	return ABF_URI . '/assets/images/' . ltrim( $file, '/' );
+}
+
+/**
  * Numéro de téléphone au format tel: (chiffres uniquement, préfixe international).
  *
  * @param string $numero Numéro affiché (ex. « 06 88 17 06 55 »).

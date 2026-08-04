@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "total": 21,
+    "note": "Noms et villes fournis par la cliente. Adresses, téléphones, latitude/longitude à compléter avant mise en production."
+  },
+  "departements": [
+    {
+      "code": "70",
+      "nom": "Haute-Saône",
+      "boutiques": [
+        {
+          "nom": "Espace bio",
+          "ville": "Gray"
+        },
+        {
+          "nom": "Esprit Paysan",
+          "ville": "Vesoul"
+        },
+        {
+          "nom": "La combeaufontine",
+          "precision": "Magasin de producteur à La maison familiale",
+          "ville": "Combeaufontaine"
+        },
+        {
+          "nom": "Biocoop",
+          "ville": "Vesoul"
+        },
+        {
+          "nom": "L’épicerie d’Adèle",
+          "ville": "Jussey"
+        },
+        {
+          "nom": "Esprit Paysan",
+          "ville": "Froideconche"
+        },
+        {
+          "nom": "Biocoop",
+          "ville": "Luxeuil-les-Bains"
+        },
+        {
+          "nom": "La Localerie Grayloise",
+          "ville": "Gray"
+        },
+        {
+          "nom": "Chez la Fleuriste",
+          "ville": "Gy"
+        },
+        {
+          "nom": "L’Atelier Huile de Noix",
+          "ville": "Denèvre"
+        },
+        {
+          "nom": "Au bois Quartois",
+          "ville": "La Quarte"
+        },
+        {
+          "nom": "La Localerie",
+          "ville": "Pesmes"
+        },
+        {
+          "nom": "Un monde de Mains",
+          "ville": "Rioz"
+        },
+        {
+          "nom": "Madame coquillette",
+          "ville": "Cult"
+        },
+        {
+          "nom": "Cé’bo",
+          "ville": "Luxeuil-les-Bains"
+        }
+      ]
+    },
+    {
+      "code": "21",
+      "nom": "Côte-d’Or",
+      "boutiques": [
+        {
+          "nom": "Atelier et Eve",
+          "ville": "Gevrey Chambertin"
+        }
+      ]
+    },
+    {
+      "code": "25",
+      "nom": "Doubs",
+      "boutiques": [
+        {
+          "nom": "La Ruch’ Bio",
+          "ville": "Pontarlier"
+        },
+        {
+          "nom": "Fromagerie du Préverdot",
+          "ville": "Pouilley-les-Vignes"
+        },
+        {
+          "nom": "Croc’Nature",
+          "ville": "Serre-les-Sapins"
+        },
+        {
+          "nom": "La Ruch’bio",
+          "ville": "Jougne"
+        },
+        {
+          "nom": "Les épiciers du vrac",
+          "ville": "Pirey"
+        }
+      ]
+    }
+  ]
+}

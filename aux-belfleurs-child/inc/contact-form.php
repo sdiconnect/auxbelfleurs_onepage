@@ -167,17 +167,18 @@ function abf_contact_feedback() {
 	$code = sanitize_key( wp_unslash( $_GET['contact'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 	$messages = array(
-		'success' => array( 'success', __( 'Merci, votre message a bien été envoyé. Je vous répondrai rapidement.', 'aux-belfleurs' ) ),
-		'saved'   => array( 'success', __( 'Merci, votre message a bien été enregistré. Je vous répondrai rapidement.', 'aux-belfleurs' ) ),
-		'error'   => array( 'error', __( 'Une erreur est survenue. Merci de réessayer.', 'aux-belfleurs' ) ),
-		'invalid' => array( 'error', __( 'Merci de vérifier votre nom, votre e-mail et votre message.', 'aux-belfleurs' ) ),
-		'rgpd'    => array( 'error', __( 'Merci de cocher la case de consentement pour envoyer votre message.', 'aux-belfleurs' ) ),
+		'success' => array( 'success', __( 'Message envoyé', 'aux-belfleurs' ), __( 'Merci, je vous réponds sous 48 h.', 'aux-belfleurs' ) ),
+		'saved'   => array( 'success', __( 'Message enregistré', 'aux-belfleurs' ), __( 'Merci, je vous réponds sous 48 h.', 'aux-belfleurs' ) ),
+		'error'   => array( 'error', __( 'Une erreur est survenue', 'aux-belfleurs' ), __( 'Merci de réessayer dans un instant.', 'aux-belfleurs' ) ),
+		'invalid' => array( 'error', __( 'Il manque une information', 'aux-belfleurs' ), __( 'Merci de vérifier votre nom, votre e-mail et votre message.', 'aux-belfleurs' ) ),
+		'rgpd'    => array( 'error', __( 'Consentement requis', 'aux-belfleurs' ), __( 'Merci de cocher la case avant d\'envoyer votre message.', 'aux-belfleurs' ) ),
 	);
 
 	return isset( $messages[ $code ] )
 		? array(
-			'type' => $messages[ $code ][0],
-			'text' => $messages[ $code ][1],
+			'type'  => $messages[ $code ][0],
+			'title' => $messages[ $code ][1],
+			'text'  => $messages[ $code ][2],
 		)
 		: null;
 }
