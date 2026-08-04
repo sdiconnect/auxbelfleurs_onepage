@@ -129,14 +129,27 @@ function abf_enqueue_scripts() {
 add_action( 'wp_enqueue_scripts', 'abf_enqueue_scripts' );
 
 /**
- * Précharge la police et la photo du hero pour améliorer le LCP.
+ * Préchargements pour améliorer le LCP.
+ * Polices critiques sur toutes les pages du thème ; connexions carte sur l'accueil.
  */
 function abf_resource_hints() {
-	if ( ! is_front_page() ) {
-		return;
+	// Polices auto-hébergées (titre + texte) : preload avec crossorigin obligatoire.
+	$fonts = array(
+		'/assets/fonts/grand-hotel-400-latin.woff2',
+		'/assets/fonts/lato-400-latin.woff2',
+	);
+	foreach ( $fonts as $font ) {
+		printf(
+			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
+			esc_url( ABF_URI . $font )
+		);
 	}
-	echo '<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>' . "\n";
-	echo '<link rel="preconnect" href="https://unpkg.com" crossorigin>' . "\n";
+
+	// Sur l'accueil uniquement : préconnexion aux serveurs de la carte.
+	if ( is_front_page() ) {
+		echo '<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin>' . "\n";
+		echo '<link rel="preconnect" href="https://unpkg.com" crossorigin>' . "\n";
+	}
 }
 add_action( 'wp_head', 'abf_resource_hints', 1 );
 

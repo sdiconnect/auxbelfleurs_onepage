@@ -18,11 +18,12 @@ aux-belfleurs-child/         Le thème enfant à installer
 │   ├── csv-import.php       Import CSV des boutiques
 │   ├── stores.php           Récupération des points de vente (groupés par dép.)
 │   └── contact-form.php     Traitement du formulaire + enregistrement en base
+├── page.php                 Gabarit des pages légales (header + footer du thème)
 ├── template-parts/          Une partie de template par section (dont section-gallery)
 └── assets/
     ├── css/main.css         Feuille de style unique (tokens design + charte)
     ├── js/main.js           JS unique (carte, recherche, géoloc)
-    ├── fonts/               Déposez ici les .woff2 (Grand Hotel + Lato) — voir README
+    ├── fonts/               Grand Hotel + Lato en .woff2 (fournies, auto-hébergées)
     └── images/              logo.webp, hero-savons.webp, shampoings-solides.webp (fournis)
 
 data/points-de-vente-modele.csv   CSV modèle avec les 21 boutiques
@@ -41,9 +42,8 @@ docs/
 4. **Activer** « Aux Bêl'fleurs ».
 5. **Apparence → Personnaliser → Identité du site → Logo** : déposer le logo floral doré
    *(un logo par défaut est déjà fourni dans `assets/images/logo.webp`)*.
-6. **Polices** : déposer les `.woff2` dans `assets/fonts/` (Grand Hotel + Lato) —
-   voir `aux-belfleurs-child/assets/fonts/README.txt`. Sans elles, un repli s'affiche
-   (le site reste lisible).
+6. **Polices** : rien à faire — Grand Hotel (titres) et Lato (texte) sont **incluses**
+   dans le thème (`assets/fonts/`, auto-hébergées, sans appel externe / RGPD).
 7. Les visuels (héro + galerie) sont déjà fournis en WebP dans `assets/images/` ;
    remplaçables via les filtres `abf_hero_image` / `abf_gallery_tiles`.
 8. Créer/vérifier une page d'accueil : **Réglages → Lecture → La page d'accueil affiche → Une page statique**.
@@ -52,6 +52,10 @@ docs/
 > **Design** : couleurs, typographie, espacements, rayons et ombres sont alignés sur la
 > maquette hifi validée (design handoff). Tous les tokens sont dans le `:root` en haut de
 > `assets/css/main.css` — modifier une couleur = un seul endroit.
+
+> **Pages légales** : mentions légales et politique de confidentialité utilisent
+> `page.php`, qui reprend le **même header et le même footer** que la page d'accueil —
+> elles restent donc dans l'univers du site (plus de bascule vers le gabarit Astra).
 
 > Le thème charge **Leaflet en différé** depuis unpkg.com (CDN) uniquement quand
 > la carte approche de l'écran, et les **tuiles depuis OpenStreetMap**. Aucune clé

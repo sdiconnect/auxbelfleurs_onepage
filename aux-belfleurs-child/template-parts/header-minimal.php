@@ -21,9 +21,14 @@ $abf_infos = abf_infos();
 			<?php endif; ?>
 		</a>
 
+		<?php
+		// Ancres absolues (préfixées par l'accueil) pour fonctionner aussi depuis
+		// les pages légales, tout en restant du défilement doux sur la page d'accueil.
+		$abf_home = is_front_page() ? '' : home_url( '/' );
+		?>
 		<nav class="abf-nav" aria-label="<?php esc_attr_e( 'Navigation principale', 'aux-belfleurs' ); ?>">
-			<a href="#carte"><?php esc_html_e( 'Où m\'acheter', 'aux-belfleurs' ); ?></a>
-			<a href="#contact"><?php esc_html_e( 'Contact', 'aux-belfleurs' ); ?></a>
+			<a href="<?php echo esc_url( $abf_home . '#carte' ); ?>"><?php esc_html_e( 'Où m\'acheter', 'aux-belfleurs' ); ?></a>
+			<a href="<?php echo esc_url( $abf_home . '#contact' ); ?>"><?php esc_html_e( 'Contact', 'aux-belfleurs' ); ?></a>
 		</nav>
 	</div>
 </header>
