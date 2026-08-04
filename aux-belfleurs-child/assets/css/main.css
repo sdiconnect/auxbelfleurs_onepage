@@ -1,0 +1,344 @@
+/**
+ * Aux Bêl'fleurs — feuille de style unique.
+ * Mobile-first. Contrastes AA. Charte : jaune d'or, sarcelle, crème.
+ */
+
+:root {
+	/* Charte */
+	--abf-gold: #c8971a;        /* jaune d'or */
+	--abf-gold-dark: #a67c12;
+	--abf-teal: #12726e;        /* sarcelle */
+	--abf-teal-dark: #0d5652;
+	--abf-cream: #fdf8ef;       /* crème */
+	--abf-cream-dark: #f3ead9;
+	--abf-ink: #2a2622;         /* texte principal */
+	--abf-ink-soft: #5a544c;
+	--abf-white: #ffffff;
+
+	/* Typo */
+	--abf-font-body: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
+	--abf-font-title: "Great Vibes", "Dancing Script", "Brush Script MT", cursive;
+
+	/* Mesures */
+	--abf-container: 1180px;
+	--abf-header-h: 68px;
+	--abf-radius: 10px;
+	--abf-shadow: 0 6px 24px rgba(42, 38, 34, 0.12);
+	--abf-gap: 24px;
+}
+
+/* --- Base --- */
+* { box-sizing: border-box; }
+
+body.abf-onepage {
+	margin: 0;
+	font-family: var(--abf-font-body);
+	color: var(--abf-ink);
+	background: var(--abf-cream);
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+.abf-container {
+	width: 100%;
+	max-width: var(--abf-container);
+	margin-inline: auto;
+	padding-inline: 20px;
+}
+
+img { max-width: 100%; height: auto; }
+
+a { color: var(--abf-teal); }
+a:hover { color: var(--abf-teal-dark); }
+
+h1, h2, h3 { line-height: 1.2; }
+
+.abf-section-head h2,
+.abf-hero__title,
+.abf-contact-info h2,
+.abf-dep-title {
+	font-family: var(--abf-font-title);
+	font-weight: 400;
+	color: var(--abf-teal);
+}
+
+/* Accessibilité : lien d'évitement + labels masqués visuellement */
+.screen-reader-text {
+	position: absolute !important;
+	width: 1px; height: 1px;
+	padding: 0; margin: -1px;
+	overflow: hidden; clip: rect(0,0,0,0);
+	white-space: nowrap; border: 0;
+}
+.abf-skip-link {
+	position: absolute; left: 8px; top: -60px;
+	z-index: 1001; background: var(--abf-teal); color: #fff;
+	padding: 10px 16px; border-radius: 6px; transition: top .2s;
+}
+.abf-skip-link:focus { top: 8px; color: #fff; }
+
+:focus-visible {
+	outline: 3px solid var(--abf-gold);
+	outline-offset: 2px;
+}
+
+/* --- Boutons --- */
+.abf-btn {
+	display: inline-block;
+	font-weight: 600;
+	text-decoration: none;
+	border: 2px solid transparent;
+	border-radius: 999px;
+	padding: 12px 26px;
+	cursor: pointer;
+	transition: background .15s, color .15s, transform .1s;
+	font-size: 1rem;
+	line-height: 1;
+}
+.abf-btn:active { transform: translateY(1px); }
+.abf-btn--primary {
+	background: var(--abf-gold);
+	color: #241c05;
+	border-color: var(--abf-gold);
+}
+.abf-btn--primary:hover { background: var(--abf-gold-dark); border-color: var(--abf-gold-dark); color: #241c05; }
+.abf-btn--ghost {
+	background: transparent;
+	color: var(--abf-teal-dark);
+	border-color: var(--abf-teal);
+}
+.abf-btn--ghost:hover { background: var(--abf-teal); color: #fff; }
+.abf-btn--small {
+	padding: 7px 14px;
+	font-size: .85rem;
+	background: var(--abf-teal);
+	color: #fff;
+	border-color: var(--abf-teal);
+}
+.abf-btn--small:hover { background: var(--abf-teal-dark); color: #fff; }
+
+/* --- Header --- */
+.abf-header {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	background: rgba(253, 248, 239, 0.95);
+	backdrop-filter: blur(6px);
+	border-bottom: 1px solid var(--abf-cream-dark);
+	min-height: var(--abf-header-h);
+	display: flex;
+	align-items: center;
+}
+.abf-header__inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+.abf-logo { display: inline-flex; align-items: center; text-decoration: none; }
+.abf-logo img { max-height: 44px; width: auto; }
+.abf-logo__text {
+	font-family: var(--abf-font-title);
+	font-size: 1.6rem;
+	color: var(--abf-teal);
+}
+.abf-nav { display: flex; gap: 18px; }
+.abf-nav a {
+	text-decoration: none;
+	font-weight: 600;
+	color: var(--abf-ink);
+	padding: 6px 2px;
+	border-bottom: 2px solid transparent;
+}
+.abf-nav a:hover { color: var(--abf-teal); border-bottom-color: var(--abf-gold); }
+
+/* --- Hero --- */
+.abf-hero {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	min-height: 72vh;
+	padding: 60px 0;
+	/* La photo passe au-dessus d'un dégradé de secours (visible si l'image manque). */
+	background-image: var(--abf-hero-img), linear-gradient(135deg, var(--abf-teal), var(--abf-gold-dark));
+	background-size: cover, cover;
+	background-position: center, center;
+	background-color: var(--abf-teal-dark);
+}
+.abf-hero__overlay {
+	position: absolute; inset: 0;
+	background: linear-gradient(180deg, rgba(18,114,110,.30), rgba(42,38,34,.55));
+}
+.abf-hero__inner { position: relative; max-width: 760px; }
+.abf-hero__logo img { max-height: 120px; margin-bottom: 12px; }
+.abf-hero__title {
+	color: #fff;
+	font-size: clamp(2rem, 6vw, 3.4rem);
+	margin: 0 0 12px;
+	text-shadow: 0 2px 12px rgba(0,0,0,.35);
+}
+.abf-hero__subtitle {
+	color: #fff;
+	font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+	margin: 0 0 28px;
+	text-shadow: 0 1px 8px rgba(0,0,0,.4);
+}
+
+/* --- Section titres --- */
+.abf-section-head { text-align: center; margin-bottom: 28px; }
+.abf-section-head h2 { font-size: clamp(2rem, 5vw, 2.8rem); margin: 0 0 6px; }
+.abf-section-head p { color: var(--abf-ink-soft); margin: 0; }
+
+/* --- Carte --- */
+.abf-map-section { padding: 56px 0; }
+.abf-map-tools {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 20px;
+	align-items: center;
+}
+.abf-search { flex: 1; min-width: 220px; }
+.abf-search input {
+	width: 100%;
+	padding: 13px 18px;
+	border: 2px solid var(--abf-cream-dark);
+	border-radius: 999px;
+	font-size: 1rem;
+	background: #fff;
+}
+.abf-search input:focus { border-color: var(--abf-teal); outline: none; }
+
+.abf-map-layout { display: flex; flex-direction: column; gap: var(--abf-gap); }
+
+.abf-map-wrap { order: 2; }
+.abf-map {
+	width: 100%;
+	height: 340px;
+	border-radius: var(--abf-radius);
+	background: var(--abf-cream-dark);
+	box-shadow: var(--abf-shadow);
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.abf-noscript { padding: 20px; text-align: center; color: var(--abf-ink-soft); }
+
+.abf-store-list { order: 1; }
+.abf-dep-group { margin-bottom: 22px; }
+.abf-dep-title {
+	font-size: 1.5rem;
+	margin: 0 0 10px;
+	padding-bottom: 4px;
+	border-bottom: 2px solid var(--abf-gold);
+}
+.abf-dep-stores { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+
+.abf-store {
+	background: #fff;
+	border: 1px solid var(--abf-cream-dark);
+	border-left: 4px solid transparent;
+	border-radius: var(--abf-radius);
+	padding: 14px 16px;
+	transition: box-shadow .15s, border-color .15s, transform .1s;
+	scroll-margin-top: calc(var(--abf-header-h) + 10px);
+}
+.abf-store:hover,
+.abf-store.is-active {
+	border-left-color: var(--abf-gold);
+	box-shadow: var(--abf-shadow);
+}
+.abf-store__name { margin: 0 0 4px; font-size: 1.1rem; color: var(--abf-ink); }
+.abf-store__addr { font-style: normal; color: var(--abf-ink-soft); margin: 0 0 8px; font-size: .95rem; }
+.abf-store__tel { display: inline-block; font-weight: 600; margin-right: 12px; }
+.abf-store.is-hidden { display: none; }
+.abf-store-list__empty { padding: 16px; color: var(--abf-ink-soft); text-align: center; }
+
+/* Popup Leaflet */
+.abf-popup h4 { margin: 0 0 4px; font-size: 1.05rem; }
+.abf-popup p { margin: 0 0 6px; font-size: .9rem; }
+.abf-popup a.abf-btn--small { margin-top: 4px; }
+
+/* --- Contact --- */
+.abf-contact-section {
+	padding: 56px 0;
+	background: var(--abf-cream-dark);
+}
+.abf-contact-layout { display: flex; flex-direction: column; gap: 32px; }
+.abf-contact-info h2 { font-size: clamp(2rem, 5vw, 2.6rem); margin: 0 0 16px; }
+.abf-contact-address { font-style: normal; margin-bottom: 12px; }
+.abf-social { margin-top: 14px; display: flex; gap: 16px; }
+.abf-social a { font-weight: 600; text-decoration: none; }
+.abf-social a:hover { text-decoration: underline; }
+
+.abf-contact-form-wrap { background: #fff; padding: 24px; border-radius: var(--abf-radius); box-shadow: var(--abf-shadow); }
+.abf-field { margin: 0 0 16px; }
+.abf-field label { display: block; font-weight: 600; margin-bottom: 6px; }
+.abf-field input[type="text"],
+.abf-field input[type="email"],
+.abf-field textarea {
+	width: 100%;
+	padding: 12px 14px;
+	border: 2px solid var(--abf-cream-dark);
+	border-radius: 8px;
+	font-size: 1rem;
+	font-family: inherit;
+}
+.abf-field input:focus,
+.abf-field textarea:focus { border-color: var(--abf-teal); outline: none; }
+.abf-field--check label { display: flex; gap: 10px; font-weight: 400; align-items: flex-start; font-size: .92rem; }
+.abf-field--check input { margin-top: 4px; flex-shrink: 0; }
+
+/* Honeypot : masqué mais accessible aux bots */
+.abf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.abf-form-feedback { padding: 12px 16px; border-radius: 8px; margin-bottom: 18px; font-weight: 600; }
+.abf-form-feedback--success { background: #e5f3ec; color: #14663f; border: 1px solid #b9e0cb; }
+.abf-form-feedback--error { background: #fbeaea; color: #8a2020; border: 1px solid #edc2c2; }
+
+/* --- Footer --- */
+.abf-footer {
+	background: var(--abf-teal-dark);
+	color: #fff;
+	padding: 18px 0;
+	font-size: .9rem;
+}
+.abf-footer__inner {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 20px;
+	align-items: center;
+	justify-content: space-between;
+}
+.abf-footer a { color: #fff; text-decoration: none; }
+.abf-footer a:hover { text-decoration: underline; color: #fff; }
+.abf-footer__links { display: flex; gap: 18px; flex-wrap: wrap; }
+.abf-footer__copy { margin: 0; }
+
+/* --- Desktop --- */
+@media (min-width: 860px) {
+	.abf-map-layout { flex-direction: row; align-items: stretch; }
+	.abf-map-wrap { order: 1; flex: 1 1 55%; }
+	.abf-store-list {
+		order: 2;
+		flex: 1 1 45%;
+		max-height: 620px;
+		overflow-y: auto;
+		padding-right: 6px;
+	}
+	.abf-map { height: 100%; min-height: 560px; position: sticky; top: calc(var(--abf-header-h) + 16px); }
+
+	.abf-contact-layout { flex-direction: row; }
+	.abf-contact-info { flex: 1 1 40%; }
+	.abf-contact-form-wrap { flex: 1 1 60%; }
+}
+
+/* --- Réduction des animations --- */
+@media (prefers-reduced-motion: reduce) {
+	* { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+html { scroll-behavior: smooth; }

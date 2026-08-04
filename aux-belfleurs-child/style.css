@@ -1,0 +1,17 @@
+/*
+Theme Name: Aux Bêl'fleurs
+Theme URI: https://auxbelfleurs.fr/
+Description: Thème enfant Astra pour Aux Bêl'fleurs — page unique « points de vente + contact ». Aucune fonction e-commerce. Carte Leaflet + OpenStreetMap, CPT « Points de vente » géocodé via Nominatim, formulaire de contact intégré.
+Author: SDI Connect
+Author URI: https://sdi-connect.com/
+Template: astra
+Version: 1.0.0
+Requires PHP: 7.4
+Text Domain: aux-belfleurs
+License: GPL-2.0-or-later
+*/
+
+/*
+ * Les styles réels sont dans assets/css/main.css (chargé via functions.php).
+ * Ce fichier ne sert qu'à déclarer le thème enfant auprès de WordPress.
+ */
